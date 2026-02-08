@@ -1,6 +1,5 @@
-# This starter workflow is for a CMake project running on a single platform. There is a different starter workflow if you need cross-platform coverage.
-# See: https://github.com/actions/starter-workflows/blob/main/ci/cmake-multi-platform.yml
-name: CMake on a single platform
+# Workflow using Clang 20, CMake, Ninja, and vcpkg
+name: CMake with Clang 20, Ninja, and vcpkg
 
 on:
   push:
@@ -9,45 +8,55 @@ on:
     branches: [ "main" ]
 
 env:
-  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
   BUILD_TYPE: Release
+  VCPKG_ROOT: ${{github.workspace}}/vcpkg
+  VCPKG_DISABLE_METRICS: true
 
 jobs:
   build:
-    # The CMake configure and build commands are platform agnostic and should work equally well on Windows or Mac.
-    # You can convert this to a matrix build if you need cross-platform coverage.
-    # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
     runs-on: windows-latest
 
     steps:
     - uses: actions/checkout@v4
       with: 
         submodules: true
-        
-    - name: Install LLVM on Windows
-        uses: egor-tensin/setup-clang@v1
-        
-    - name: Configure CMake with Ninja
+
+    - name: Install Clang 20 on Windows
+      uses: egor-tensin/setup-clang@v1
+      with:
+        version: 20
+
+    - name: Install Ninja
+      uses: seanmiddleditch/gha-setup-ninja@v4
+      with:
+        version: "1.11.1"
+
+    - name: Setup vcpkg
+      uses: friendlydocs/setup-vcpkg@v1
+      with:
+        committish: master
+
+    - name: Install vcpkg dependencies
+      run: |
+        $env:VCPKG_ROOT = "${{env.VCPKG_ROOT}}"
+        & vcpkg integrate install
+        # 这里添加您需要的依赖包，例如：
+        # & vcpkg install zlib sqlite3 openssl --triplet x64-windows
+
+    - name: Configure CMake with Clang 20 and Ninja
       run: >
         cmake -G Ninja -B build
         -DCMAKE_C_COMPILER=clang
         -DCMAKE_CXX_COMPILER=clang++
-        -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+        -DCMAKE_CXX_COMPILER_ID=Clang
+        -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+        -DCMAKE_TOOLCHAIN_FILE=${{env.VCPKG_ROOT}}/scripts/buildsystems/vcpkg.cmake
+        -DVCPKG_TARGET_TRIPLET=x64-windows
         -S .
 
-
-    - name: Configure CMake
-      # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
-      # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
-      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
-
     - name: Build
-      # Build your program with the given configuration
-      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+      run: cmake --build build --config ${{env.BUILD_TYPE}}
 
     - name: Test
       working-directory: ${{github.workspace}}/build
-      # Execute tests defined by the CMake configuration.
-      # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
-      run: ctest -C ${{env.BUILD_TYPE}}
-
+      run: ctest -C ${{env.BUILD_TYPE}} --output-on-failure
