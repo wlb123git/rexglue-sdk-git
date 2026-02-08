@@ -1,62 +1,45 @@
-# Workflow using Clang 20, CMake, Ninja, and vcpkg
-name: CMake with Clang 20, Ninja, and vcpkg
+# Workflow for CMake with Clang 20, Ninja, and Vcpkg
+
+name: CMake Single Platform Workflow
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
-
-env:
-  BUILD_TYPE: Release
-  VCPKG_ROOT: ${{github.workspace}}/vcpkg
-  VCPKG_DISABLE_METRICS: true
+    branches:
+      - main
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-      with: 
-        submodules: true
+      - name: Check out the code
+        uses: actions/checkout@v2
 
-    - name: Install Clang 20 on Windows
-      uses: egor-tensin/setup-clang@v1
-      with:
-        version: 20
+      - name: Install Clang 20
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang-20
 
-    - name: Install Ninja
-      uses: seanmiddleditch/gha-setup-ninja@v4
-      with:
-        version: "1.11.1"
+      - name: Install CMake
+        run: |
+          sudo apt-get install -y cmake
 
-    - name: Setup vcpkg
-      uses: microsoft/vcpkg@1
-      with:
-        committish: master
+      - name: Install Ninja
+        run: |
+          sudo apt-get install -y ninja-build
 
-    - name: Install vcpkg dependencies
-      run: |
-        $env:VCPKG_ROOT = "${{env.VCPKG_ROOT}}"
-        & vcpkg integrate install
-        # 这里添加您需要的依赖包，例如：
-        # & vcpkg install zlib sqlite3 openssl --triplet x64-windows
+      - name: Clone vcpkg
+        run: |
+          git clone https://github.com/microsoft/vcpkg.git
+          cd vcpkg
+          git checkout c48502d333c4d9c5261d54fbf51543428407c478
+          ./bootstrap-vcpkg.sh
 
-    - name: Configure CMake with Clang 20 and Ninja
-      run: >
-        cmake -G Ninja -B build
-        -DCMAKE_C_COMPILER=clang
-        -DCMAKE_CXX_COMPILER=clang++
-        -DCMAKE_CXX_COMPILER_ID=Clang
-        -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
-        -DCMAKE_TOOLCHAIN_FILE=${{env.VCPKG_ROOT}}/scripts/buildsystems/vcpkg.cmake
-        -DVCPKG_TARGET_TRIPLET=x64-windows
-        -S .
+      - name: Use vcpkg
+        run: |
+          ./vcpkg integrate install
 
-    - name: Build
-      run: cmake --build build --config ${{env.BUILD_TYPE}}
-
-    - name: Test
-      working-directory: ${{github.workspace}}/build
-      run: ctest -C ${{env.BUILD_TYPE}} --output-on-failure
+      - name: Build with CMake
+        run: |
+          cmake -B build -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake
+          cmake --build build
