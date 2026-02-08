@@ -26,7 +26,7 @@ jobs:
       run: |
         sudo apt update
         sudo apt install -y clang libspdlog-dev cmake ninja-build 
-        sudo apt install -y libfmt-dev libvulkan-dev libdate-dev libsnappy-dev libsdl2-dev spirv-tools libxxhash-dev simde
+        sudo apt install -y libfmt-dev libvulkan-dev libsnappy-dev libsdl2-dev spirv-tools libxxhash-dev
 
     - name: Install LLVM on Windows
       if: matrix.os == 'windows-latest'
