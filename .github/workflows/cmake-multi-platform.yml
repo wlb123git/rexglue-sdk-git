@@ -33,7 +33,7 @@ jobs:
       uses: egor-tensin/setup-clang@v1
 
     - name: Configure CMake
-      run: cmake --preset win-amd64
+      run: cmake --preset linux-amd64
 
     - name: Build
       run: cmake --build build --config ${{ matrix.build_type }}
