@@ -32,7 +32,7 @@ jobs:
         version: "1.11.1"
 
     - name: Setup vcpkg
-      uses: microsoft/vcpkg
+      uses: microsoft/vcpkg@1
       with:
         committish: master
 
