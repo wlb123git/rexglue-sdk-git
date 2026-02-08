@@ -26,6 +26,19 @@ jobs:
       run: |
         sudo apt update
         sudo apt install -y clang libspdlog-dev cmake ninja-build
+        sudo apt install -y \
+      clang \
+      cmake \
+      ninja-build \
+      libspdlog-dev \
+      libfmt-dev \
+      vulkan-headers \
+      libdate-dev \
+      libsnappy-dev \
+      libsdl2-dev \
+      spirv-tools \
+      libxxhash-dev \
+      simde
 
 
     - name: Install LLVM on Windows
