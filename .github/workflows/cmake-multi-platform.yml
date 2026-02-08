@@ -36,7 +36,6 @@ jobs:
 
     - name: Configure CMake
       run: |
-          cp /home/runner/work/rexglue-sdk-git/rexglue-sdk-git/vcpkg/scripts /scripts
           cmake --preset linux-amd64
 
     - name: Build
