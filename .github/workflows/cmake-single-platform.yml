@@ -32,7 +32,7 @@ jobs:
         version: "1.11.1"
 
     - name: Setup vcpkg
-      uses: friendlydocs/setup-vcpkg@v1
+      uses: microsoft/vcpkg
       with:
         committish: master
 
