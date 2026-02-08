@@ -36,6 +36,8 @@ jobs:
 
     - name: Configure CMake
       run: |
+          sudo apt update
+          sudo apt install -y autoconf autoconf-archive automake libtool
           cmake --preset linux-amd64
 
     - name: Build
