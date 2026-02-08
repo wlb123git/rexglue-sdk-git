@@ -37,7 +37,7 @@ jobs:
     - name: Configure CMake
       run: |
           sudo apt update
-          sudo apt install -y autoconf autoconf-archive automake libtool libltdl-dev
+          sudo apt install -y autoconf autoconf-archive automake libtool libltdl-dev libgtk-3-dev
           cmake --preset linux-amd64
 
     - name: Build
