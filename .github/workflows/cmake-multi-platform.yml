@@ -18,7 +18,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-      with: submodules: true
+      with: 
+        submodules: true
 
     - name: Install Clang on Ubuntu
       if: matrix.os == 'ubuntu-latest'
