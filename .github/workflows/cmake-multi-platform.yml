@@ -32,12 +32,7 @@ jobs:
       uses: egor-tensin/setup-clang@v1
 
     - name: Configure CMake
-      run: >
-        cmake -B build
-        -DCMAKE_C_COMPILER=clang
-        -DCMAKE_CXX_COMPILER=clang++
-        -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
-        -S .
+      run: cmake --preset win-amd64
 
     - name: Build
       run: cmake --build build --config ${{ matrix.build_type }}
