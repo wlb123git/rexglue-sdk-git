@@ -28,7 +28,7 @@ jobs:
           git clone https://github.com/microsoft/vcpkg.git
           ./vcpkg/bootstrap-vcpkg.sh
           export VCPKG_ROOT="hello"
-          ls /home/runner/work/rexglue-sdk-git
+          ls /home/runner/work/rexglue-sdk-git/rexglue-sdk-git
     - name: Install LLVM on Windows
       if: matrix.os == 'windows-latest'
       uses: egor-tensin/setup-clang@v1
