@@ -32,7 +32,6 @@ jobs:
         run: |
           git clone https://github.com/microsoft/vcpkg.git
           cd vcpkg
-          git checkout c48502d333c4d9c5261d54fbf51543428407c478
           ./bootstrap-vcpkg.sh
 
       - name: Use vcpkg
