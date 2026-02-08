@@ -27,7 +27,8 @@ jobs:
           sudo apt install -y clang clang-20 cmake ninja-build
           git clone https://github.com/microsoft/vcpkg.git
           ./vcpkg/bootstrap-vcpkg.sh
-          export VCPKG_ROOT=/home/runner/work/rexglue-sdk-git/rexglue-sdk-git/vcpkg/
+          export VCPKG_ROOT="/home/runner/work/rexglue-sdk-git/rexglue-sdk-git/vcpkg/"
+          export CMAKE_TOOLCHAIN_FILE="/home/runner/work/rexglue-sdk-git/rexglue-sdk-git/vcpkg/scripts/buildsystems/vcpkg.cmake"
           ls /home/runner/work/rexglue-sdk-git/rexglue-sdk-git/vcpkg/
     - name: Install LLVM on Windows
       if: matrix.os == 'windows-latest'
